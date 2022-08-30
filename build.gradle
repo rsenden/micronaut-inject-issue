@@ -1,0 +1,70 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("io.micronaut.graalvm") version "3.5.1" // Needed to generate Graal resource-config.json
+    id("io.micronaut.application") version "3.5.1" apply false
+    id("io.micronaut.library") version "3.5.1" apply false
+    id 'eclipse'
+}
+
+version = "0.1"
+group = "org.sample.micronaut"
+
+apply plugin: "io.micronaut.application"
+
+application {
+    mainClass.set("org.sample.micronaut.cli.SampleCLI")
+}
+shadowJar {
+    archiveBaseName.set('mncli')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
+    targetCompatibility = JavaVersion.toVersion("11")
+}
+micronaut {
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("org.sample.micronaut.*")
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Lombok dependency & annotation processor
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    // Picocli dependency and annotation processor
+    annotationProcessor("info.picocli:picocli-codegen:4.6.3")
+    
+    implementation("info.picocli:picocli:4.6.3")
+
+    annotationProcessor("io.micronaut:micronaut-inject-java:3.4.2")
+    annotationProcessor("io.micronaut:micronaut-graal:3.4.2")
+
+    // Micronaut dependencies
+    implementation("io.micronaut:micronaut-runtime:3.4.2")
+    implementation("io.micronaut.picocli:micronaut-picocli:4.1.0")
+    implementation("javax.annotation:javax.annotation-api")
+    
+    // Logging dependency to allow us to configure logging programmatically
+    implementation("ch.qos.logback:logback-classic:1.2.11")
+    implementation("commons-logging:commons-logging:1.2")
+    runtimeOnly('org.slf4j:jcl-over-slf4j:1.7.36')
+    
+    // Encryption library
+    implementation('org.jasypt:jasypt:1.9.3:lite')
+    
+    // GraalVM dependency
+    compileOnly("org.graalvm.nativeimage:svm")
+}
+
+mainClassName = "org.sample.micronaut.cli.SampleCLI"
+
